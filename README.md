@@ -11,6 +11,8 @@
 
 ## 설치 — Claude Code에 그대로 붙여넣기
 
+> ※ 사전에 **Node.js**, **Python 3.x**, **git** 설치 필요 (자세한 건 아래 "필요 환경")
+
 아래 프롬프트를 Claude Code 채팅창에 그대로 붙여넣으면 Claude가 알아서 설치합니다:
 
 ```
@@ -58,12 +60,17 @@ https://brand.naver.com/edgewall/products/11071342257 이거 리뷰 수집해줘
 
 ## 필요 환경
 
+### 사전 요건 (없다면 먼저 설치)
+
+- **Node.js (LTS)** — https://nodejs.org (npm이 같이 깔립니다)
+- **Python 3.x** — https://python.org
+- **git** — https://git-scm.com (Windows는 Git for Windows 추천 — Git Bash 포함)
+
+### 자동 설치되는 것 (위 "설치" 프롬프트가 처리)
+
 - Claude Code (CLI / Desktop / VSCode 확장 모두 지원)
 - agent-browser CLI: `npm i -g agent-browser && agent-browser install`
-- Python 3.x + openpyxl: `pip install openpyxl`
-- git (스킬 클론용)
-
-위 "설치" 프롬프트를 그대로 쓰면 Claude가 셋 다 알아서 설치합니다.
+- Python 패키지: `pip install openpyxl`
 
 ## 무엇이 들어있나
 
