@@ -1,0 +1,12 @@
+{
+  "name": "naver-review-scraper",
+  "version": "0.1.0",
+  "description": "네이버 브랜드/스마트스토어 리뷰를 backend API로 전량 수집해 엑셀로 저장하는 Claude Code 스킬. 무한스크롤 DOM 긁기 대비 10배 이상 빠르고 안정적.",
+  "author": {
+    "name": "박찬주",
+    "email": "parkchanju1019@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["naver", "smartstore", "brand-store", "review", "scraper", "claude-skill"],
+  "skills": ["./skills/naver-review-scraper"]
+}
