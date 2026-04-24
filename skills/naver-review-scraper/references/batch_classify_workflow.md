@@ -24,11 +24,13 @@ C:\Users\영유진\OneDrive\Desktop\박찬주\2026\리뷰 분석\<제품명>\
 {
   "review_id": 1, "date": "26.04.23.", "rating": "5",
   "writer": "dndu*****", "option": "제품: SMB86W",
-  "content": "...", "is_month_review": false
+  "content": "...", "is_month_review": true
 }
 ```
 
 `createDate` (ISO) → `YY.MM.DD.` 변환 필수.
+
+**`is_month_review` 판정**: API 응답의 `reviewType` 필드 그대로 사용 — `AFTER_USE` → `true`, `NORMAL` → `false`. **본문에서 "한달" 키워드 매칭 금지.** 시스템 메타로 명확히 분리됨. 한 달 후기 분리 분석은 항상 이 필드 기준.
 
 ## Phase D — 병렬 에이전트 분류
 - N개 배치 = N개 `general-purpose` 에이전트, **모두 한 번의 메시지에서 동시 발사** (`run_in_background: true`)

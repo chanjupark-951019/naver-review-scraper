@@ -55,7 +55,7 @@ Content-Type: application/json
 | `maskedWriterId` | string | 작성자 마스킹 ID (예 `dndu*****`) |
 | `productOptionContent` | string | 옵션 텍스트 (예 `제품: SMB86W`) |
 | `repurchase` | bool | 재구매 여부 |
-| `reviewType` | enum | `NORMAL` / `MONTH` 등 |
+| `reviewType` | enum | **`NORMAL`** = 일반 리뷰, **`AFTER_USE`** = 한 달 사용 후기. ※ 한 달 후기를 식별할 때 본문의 "한달" 키워드 매칭 금지 — 반드시 이 필드로 판정. |
 | `reviewServiceType` | enum | `SELLBLOG` 등 |
 | `reviewContentClassType` | enum | `TEXT` / `PHOTO` / `VIDEO` |
 | `reviewAttaches[]` | array | 첨부 배열. **URL은 `attachUrl`** (또는 `attachPath`) |
