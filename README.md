@@ -12,38 +12,61 @@
 
 ---
 
-## 설치 — 한 줄 (권장)
+## 설치
 
-설치 스크립트가 사전 환경 점검 → **시스템 Chrome 자동 감지** → 스킬 복사 → 환경변수 설정까지 한 번에 처리합니다. 시스템 Chrome이 있으면 `agent-browser install`(약 200MB / 5~15분)을 자동 건너뜁니다.
+### 사전 요건 (한 번만)
 
-### Windows PowerShell
+| 도구 | 다운로드 | 설치 확인 |
+|------|----------|----------|
+| **Node.js (LTS)** | https://nodejs.org | 설치 후 PC 재부팅 권장 |
+| **Python 3.x** | https://python.org | Windows는 "Add to PATH" 체크 |
+| **git** | https://git-scm.com | Windows는 Git for Windows |
+| **Google Chrome** | https://www.google.com/chrome | 대부분 이미 있음 |
 
-```powershell
-iwr -useb https://raw.githubusercontent.com/chanjupark-951019/naver-review-scraper/main/install.ps1 | iex
-```
-
-### Mac / Linux / Git Bash
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/chanjupark-951019/naver-review-scraper/main/install.sh | bash
-```
-
-설치 완료 후 **Claude Code를 재시작**하면 끝.
+위 4개 중 없는 것만 먼저 설치하고, **PC를 한 번 재시작**해주세요. (PATH 환경변수 갱신을 위해)
 
 ---
 
-## 사전 요건
+### 설치 — Claude Code 채팅창에 그대로 붙여넣기
 
-설치 스크립트가 시작 시 자동으로 점검합니다. 없으면 설치 링크를 안내하고 종료합니다.
+**터미널 명령어 직접 치지 마세요.** 아래 프롬프트를 **Claude Code 채팅창에 그대로 붙여넣으면** Claude가 알아서 다 처리합니다.
 
-| 도구 | 다운로드 |
-|------|----------|
-| Node.js (LTS) | https://nodejs.org |
-| Python 3.x | https://python.org |
-| git | https://git-scm.com |
-| Google Chrome | https://www.google.com/chrome (대부분 PC에 이미 있음) |
+```
+이 GitHub 스킬을 ~/.claude/skills/ 에 설치해줘:
+https://github.com/chanjupark-951019/naver-review-scraper
 
-> Chrome이 없으면 자동으로 Chromium(200MB)을 다운로드합니다 (5~15분). 회사 네트워크가 느리면 시간이 더 걸릴 수 있으니 다른 작업하면서 대기하세요.
+다음 순서로 진행해줘. 각 단계가 끝날 때마다 어느 단계까지 끝났는지 한 줄로 보고만 하고, 코드 분석이나 테스트, 검증 같은 부가 작업은 일절 하지 마.
+
+1. 사전 점검: node --version, npm --version, git --version, python --version (또는 python3) 모두 출력. 하나라도 없으면 즉시 중단하고 사용자에게 어떤 도구를 어디서 받아야 하는지 알려준 뒤 PC 재시작 후 다시 실행 요청.
+
+2. 시스템 Chrome 자동 감지. 다음 경로 중 존재하는 첫 번째 파일을 사용:
+   - Windows: C:\Program Files\Google\Chrome\Application\chrome.exe
+   - Windows: C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+   - Windows: $LOCALAPPDATA\Google\Chrome\Application\chrome.exe
+   - Mac: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+   - Linux: /usr/bin/google-chrome 또는 /usr/bin/chromium
+   발견하면 그 경로를 변수에 저장. 못 찾으면 변수는 빈 값.
+
+3. npm install -g agent-browser 실행. (Chromium 다운로드 X — 다음 단계에서 결정)
+
+4. 2단계에서 Chrome을 찾았으면:
+   - 환경변수 AGENT_BROWSER_EXECUTABLE_PATH를 그 경로로 영구 설정 (Windows: setx 명령 또는 [Environment]::SetEnvironmentVariable(..., 'User'). Mac/Linux: ~/.bashrc 또는 ~/.zshrc에 export 추가).
+   - "agent-browser install" 절대 실행 금지. (Chromium 200MB 다운로드는 회사 네트워크에서 10분 이상 걸려서 건너뜀.)
+   못 찾았으면 그제서야 "agent-browser install" 실행. 시간이 5~15분 걸린다고 사용자에게 미리 알려.
+
+5. git clone https://github.com/chanjupark-951019/naver-review-scraper 임시 폴더에 받은 뒤, skills/naver-review-scraper 폴더만 ~/.claude/skills/ 안으로 복사. 기존에 같은 이름 폴더 있으면 먼저 삭제. 임시 폴더는 정리.
+
+6. pip install openpyxl 실행 (또는 python -m pip install openpyxl).
+
+7. 완료. 사용자에게 "Claude Code를 한 번 종료했다가 다시 열어주세요" 안내. 그 외 추가 검증/테스트는 하지 마.
+
+주의:
+- /plugin 명령은 이 환경에서 안 됨. 사용 금지.
+- 다른 에이전트 설정·MCP·hooks는 전혀 건드리지 마.
+- 단계별 결과만 짧게 보고. 코드 인스펙션 금지.
+```
+
+설치 완료 후 **Claude Code를 한 번 종료했다가 다시 열어주세요**. 그러면 스킬이 자동 로드됩니다.
 
 ---
 
@@ -67,53 +90,26 @@ https://brand.naver.com/edgewall/products/11071342257 이거 리뷰 수집해줘
 
 ## 트러블슈팅
 
+### "node/npm/git/python을 찾을 수 없습니다" (1단계 실패)
+사전 요건이 설치 안 됐거나, 설치했지만 PATH 갱신이 안 된 상태입니다. 위 사전 요건 표에서 빠진 도구 설치 후 **PC 재시작**.
+
+### "agent-browser install 중 멈춘 것 같음"
+설치 프롬프트의 **2단계가 작동했다면 발생하지 않을 일입니다**. 만약 시스템 Chrome을 못 찾았다면 5~15분 정도 기다려주세요 (200MB 다운로드 중). 더 오래 걸리면 Chrome을 새로 설치하고 (https://www.google.com/chrome) 위 설치 프롬프트를 다시 한 번 실행하세요 — 두 번째 실행은 Chrome을 감지해 다운로드를 건너뜁니다.
+
 ### Windows PowerShell — "이 시스템에서 스크립트를 실행할 수 없으므로..."
-실행 정책 변경:
-```powershell
+Claude가 PowerShell 명령을 실행할 때 막힐 수 있습니다. 한 번만 다음을 사용자가 직접 PowerShell(관리자 권한)에서 실행:
+```
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 ```
 
-### npm 글로벌 설치가 EACCES / EPERM으로 실패
-- Windows: PowerShell을 **관리자 권한**으로 다시 열고 실행
-- Mac/Linux: `sudo npm install -g agent-browser` 또는 `npm config get prefix`로 권한 가능 위치 확인
-
-### `agent-browser` 명령이 안 잡힘 (`command not found`)
-설치 직후 같은 셸에선 PATH 갱신이 안 될 수 있습니다 — **터미널을 새 창으로 열고** 다시 시도.
-
-### `agent-browser install`이 너무 오래 걸림 (10분 초과)
-회사 방화벽/프록시가 Chromium 다운로드 서버를 막고 있을 수 있습니다.
-**해결 1**: 시스템에 Chrome을 설치한 뒤 (https://www.google.com/chrome) 위 install 스크립트를 다시 실행 — Chrome을 자동 감지해 다운로드를 건너뜁니다.
-**해결 2**: 환경변수 직접 설정:
-```powershell
-# Windows (사용자 스코프, 영구)
-[Environment]::SetEnvironmentVariable('AGENT_BROWSER_EXECUTABLE_PATH', 'C:\Program Files\Google\Chrome\Application\chrome.exe', 'User')
-```
-```bash
-# Mac/Linux
-echo 'export AGENT_BROWSER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"' >> ~/.bashrc
-source ~/.bashrc
-```
+### npm 글로벌 설치가 EACCES / EPERM
+Windows는 PowerShell을 **관리자 권한**으로 다시 열고, 설치 프롬프트를 Claude에게 다시 입력해주세요.
 
 ### 캡차가 떠요
-agent-browser 헤드 모드로 창이 뜹니다. 직접 풀어주시면 같은 세션에서 이어서 진행. 일반 공개 상품은 보통 캡차 없이 통과.
+크롤링 시 agent-browser 헤드 모드로 창이 뜹니다. 직접 풀어주시면 같은 세션에서 이어서 진행. 일반 공개 상품은 보통 캡차 없이 통과.
 
 ### 로그인이 필요한 상품
 같은 방식으로 사용자 본인이 한 번 로그인하면 같은 세션에서 진행.
-
----
-
-## (대안) Claude한테 부탁하기
-
-스크립트 안 돌리고 Claude한테 직접:
-
-```
-이 GitHub repo를 ~/.claude/skills 에 설치해줘.
-중요: 시스템에 이미 Chrome이 있으면 'agent-browser install'은 절대 실행하지 말고,
-대신 환경변수 AGENT_BROWSER_EXECUTABLE_PATH를 Chrome 경로로 영구 설정해줘.
-Chrome이 없을 때만 'agent-browser install'을 실행해.
-
-repo: https://github.com/chanjupark-951019/naver-review-scraper
-```
 
 ---
 
@@ -121,7 +117,7 @@ repo: https://github.com/chanjupark-951019/naver-review-scraper
 
 ```
 .claude-plugin/plugin.json           # 플러그인 메타 (CLI plugin 시스템 호환)
-install.sh / install.ps1             # 한 줄 설치 스크립트
+install.sh / install.ps1             # (참고용) 같은 동작을 셸 스크립트로 구현한 버전
 skills/naver-review-scraper/
 ├── SKILL.md                         # 메인 스킬 정의 (Claude가 자동 로드)
 ├── references/
@@ -141,8 +137,8 @@ skills/naver-review-scraper/
 
 ## 업데이트·제거
 
-- **업데이트**: 같은 install 스크립트를 다시 실행하면 최신 버전으로 덮어씁니다.
-- **제거**: `~/.claude/skills/naver-review-scraper` 폴더 삭제.
+- **업데이트**: 위 설치 프롬프트를 다시 채팅창에 붙여넣으면 최신 버전으로 덮어씁니다.
+- **제거**: Claude한테 "`~/.claude/skills/naver-review-scraper` 폴더 삭제해줘" 요청.
 
 ## 라이선스
 MIT
