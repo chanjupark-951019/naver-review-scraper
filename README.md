@@ -16,14 +16,24 @@
 
 ### 사전 요건 (한 번만)
 
-| 도구 | 다운로드 | 설치 확인 |
-|------|----------|----------|
-| **Node.js (LTS)** | https://nodejs.org | 설치 후 PC 재부팅 권장 |
-| **Python 3.x** | https://python.org | Windows는 "Add to PATH" 체크 |
+| 도구 | 다운로드 | 설치 시 주의 |
+|------|----------|--------------|
+| **Node.js (LTS)** | https://nodejs.org | 기본 옵션으로 설치 |
+| **Python 3.x** | https://python.org/downloads/ | ⚠ 설치 첫 화면 **"Add python.exe to PATH" 반드시 체크**. Microsoft Store의 Python은 사용 금지 (가짜 alias 문제) |
 | **git** | https://git-scm.com | Windows는 Git for Windows |
 | **Google Chrome** | https://www.google.com/chrome | 대부분 이미 있음 |
 
 위 4개 중 없는 것만 먼저 설치하고, **PC를 한 번 재시작**해주세요. (PATH 환경변수 갱신을 위해)
+
+#### Windows 사용자 추가 사전 작업 (PowerShell)
+
+PowerShell을 **관리자 권한**으로 한 번만 열어 다음을 실행해주세요. (Claude가 환경변수를 설정할 때 막히지 않도록)
+
+```
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+`Y` 입력 후 Enter. 한 번 해두면 영구 적용됩니다.
 
 ---
 
@@ -37,7 +47,7 @@ https://github.com/chanjupark-951019/naver-review-scraper
 
 다음 순서로 진행해줘. 각 단계가 끝날 때마다 어느 단계까지 끝났는지 한 줄로 보고만 하고, 코드 분석이나 테스트, 검증 같은 부가 작업은 일절 하지 마.
 
-1. 사전 점검: node --version, npm --version, git --version, python --version (또는 python3) 모두 출력. 하나라도 없으면 즉시 중단하고 사용자에게 어떤 도구를 어디서 받아야 하는지 알려준 뒤 PC 재시작 후 다시 실행 요청.
+1. 사전 점검: node --version, npm --version, git --version 출력. python은 `python --version` 시도 후, 응답이 없거나 Windows Store가 열리는 alias이면(빈 출력이거나 'was not found' 메시지) 실패로 간주하고 `python3 --version`도 시도. 둘 다 실패하면 사용자에게 "python.org에서 Python 3.x 받고 'Add to PATH' 체크 후 PC 재시작" 안내 후 즉시 중단. node/npm/git 중 없는 것도 같은 방식으로 중단 안내.
 
 2. 시스템 Chrome 자동 감지. 다음 경로 중 존재하는 첫 번째 파일을 사용:
    - Windows: C:\Program Files\Google\Chrome\Application\chrome.exe
@@ -56,17 +66,24 @@ https://github.com/chanjupark-951019/naver-review-scraper
 
 5. git clone https://github.com/chanjupark-951019/naver-review-scraper 임시 폴더에 받은 뒤, skills/naver-review-scraper 폴더만 ~/.claude/skills/ 안으로 복사. 기존에 같은 이름 폴더 있으면 먼저 삭제. 임시 폴더는 정리.
 
-6. pip install openpyxl 실행 (또는 python -m pip install openpyxl).
+6. python -m pip install openpyxl 실행 (`pip` 직접 호출보다 항상 안전).
 
-7. 완료. 사용자에게 "Claude Code를 한 번 종료했다가 다시 열어주세요" 안내. 그 외 추가 검증/테스트는 하지 마.
+7. 완료. 사용자에게 정확히 다음 두 줄을 안내:
+   - "Claude Code를 한 번 종료했다가 다시 열어주세요. (Desktop 앱은 시스템 트레이에서 우클릭 → Quit 후 재실행 / VSCode 확장은 Ctrl+Shift+P → 'Developer: Reload Window' / CLI는 새 터미널 세션)"
+   - "재시작 후 채팅창에 '네이버 상품 URL 리뷰 수집해줘' 형태로 입력하시면 됩니다."
 
-주의:
+주의 (반드시 지킬 것):
 - /plugin 명령은 이 환경에서 안 됨. 사용 금지.
 - 다른 에이전트 설정·MCP·hooks는 전혀 건드리지 마.
-- 단계별 결과만 짧게 보고. 코드 인스펙션 금지.
+- 단계별 결과만 짧게 한 줄 보고. 코드 인스펙션·테스트 실행·dry-run 금지.
+- bash/powershell 명령 실행 시 사용자 승인이 필요하면 그냥 진행하고, 거부되면 다음 단계로 넘기지 말고 사용자에게 "허용 클릭이 필요합니다"만 한 줄 안내.
+- 임시 폴더는 OS 표준 temp 위치 사용 (Windows: $env:TEMP, Mac/Linux: /tmp 또는 mktemp).
+- 사용자명/경로에 한글이나 공백이 있어도 따옴표로 감싸서 처리.
 ```
 
 설치 완료 후 **Claude Code를 한 번 종료했다가 다시 열어주세요**. 그러면 스킬이 자동 로드됩니다.
+
+> 💡 **설치 도중 "이 명령을 실행해도 되나요?" 같은 승인 팝업이 7~10번 뜹니다** (npm install, git clone, setx, pip 등). 모두 **허용**을 누르세요. 한 번이라도 거부하면 그 단계에서 멈추니 주의.
 
 ---
 
